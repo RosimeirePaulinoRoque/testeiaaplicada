@@ -1,0 +1,165 @@
+{
+  "name": "Clínica Vida+ | Gestão Inteligente e Análise de Churn",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "resumo-paciente",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "820574bf-7d3f-433b-adbe-9e75a7671f3e",
+      "name": "Webhook",
+      "webhookId": "3d4104c1-b8e7-41bd-80f9-c6021b9304ae"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "sessoes",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "paciente_id",
+              "condition": "eq",
+              "keyValue": "={{$json.body.paciente_id}}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "633659c5-9558-47bd-8231-413f14c21a53",
+      "name": "Get many rows",
+      "credentials": {
+        "supabaseApi": {
+          "id": "kJqPXgwJwGdyc2mi",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const sessoes = items.map(i => i.json);\n\nconst historico = sessoes.map(s => {\n  return `Data: ${s.data} | Compareceu: ${s.compareceu} | Nota: ${s.notas}`;\n}).join('\\n');\n\nreturn [{\n  json: {\n    historico\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "292466ff-8d84-46fe-9159-81b1ac7ca2cf",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Você é um assistente clínico.\n\nAnalise o histórico abaixo e gere um resumo claro e profissional.\n\nInclua:\n- evolução do tratamento\n- frequência do paciente\n- pontos de atenção\n- próximos passos recomendados\n- classificação de risco de abandono (baixo, atenção ou alto)\n\nHistórico:\n{{$json.historico}}",
+        "messages": {
+          "messageValues": [
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "=Você é um assistente clínico.  Analise o histórico abaixo e gere um resumo claro e profissional.  Inclua: - evolução do tratamento - frequência do paciente - pontos de atenção - próximos passos recomendados - classificação de risco de abandono (baixo, atenção ou alto)  Histórico: {{$json.historico}}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        784,
+        -16
+      ],
+      "id": "b8f52d02-bf53-4064-aaa7-3bdc6dc865c4",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        864,
+        176
+      ],
+      "id": "904db841-5ee7-4713-a0e1-6fd1e994c4b8",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "pM5jAuJvQGocon8V",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get many rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many rows": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "e214f423-8276-47db-b327-c59ef00a8444",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d27264ab9e27cae2c0b9c1a034309fe09172575f4fb09bc65d24722ed8725e7f"
+  },
+  "id": "ZSRU2FB9mad8zyTp",
+  "tags": []
+}
