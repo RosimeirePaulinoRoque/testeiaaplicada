@@ -1,0 +1,5 @@
+curl --location 'https://paulinorosimeire.app.n8n.cloud/webhook-test/resumo-paciente' \
+--header 'Content-Type: application/json' \
+--data '{
+  "paciente_id": "bbbbbbb1-bbbb-bbbb-bbbb-bbbbbbbbbbb1"
+}'
