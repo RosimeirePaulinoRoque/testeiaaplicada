@@ -16,3 +16,5 @@ Consulta de dados de pacientes no banco de dados.
 Envio de lembretes automáticos para evitar faltas.
 
 Link do App (Frontend): vida-plus-manager.adorável.aplicativo
+
+IA: Implementada integração com Google Gemini 1.5 Flash via API para análise clínica e predição de churn, garantindo alta performance e disponibilidade do serviço
