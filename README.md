@@ -14,3 +14,5 @@ Verificação automática de agendamentos pendentes.
 Consulta de dados de pacientes no banco de dados.
 
 Envio de lembretes automáticos para evitar faltas.
+
+Link do App (Frontend): vida-plus-manager.adorável.aplicativo
